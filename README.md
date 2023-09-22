@@ -10,3 +10,5 @@ Coleção para ser importada no POSTMAN:
 ```
 src/main/resources/FIAP - Parquimetro.postman_collection.json
 ```
+
+Importante: o sistema considera que cada hora estacionado são R$ 10,00

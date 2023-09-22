@@ -102,6 +102,131 @@
 			]
 		},
 		{
+			"name": "Estacionamentos",
+			"item": [
+				{
+					"name": "GET Estacionamentos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/parquimetro/estacionamentos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"parquimetro",
+								"estacionamentos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Estacionamento By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/parquimetro/estacionamentos/650db53b944c3f38c65f33da",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"parquimetro",
+								"estacionamentos",
+								"650db53b944c3f38c65f33da"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Estacionamento",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"entrada\": \"2023-09-22T15:23:45.592\",\n    \"tipo\": \"POR_HORA\",\n    \"condutorId\": \"650d9f7fed584862682e84b4\",\n    \"veiculoId\": \"650d9dd6728f4d70cb5e39e0\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/parquimetro/estacionamentos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"parquimetro",
+								"estacionamentos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Atualizar Saída Estacionamento (por hora)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"saida\": \"2023-09-22T17:23:45.592\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/parquimetro/estacionamentos/650db98b92a24f49b0d4464e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"parquimetro",
+								"estacionamentos",
+								"650db98b92a24f49b0d4464e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Estacionamentos",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/parquimetro/estacionamentos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"parquimetro",
+								"estacionamentos"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Condutores",
 			"item": [
 				{
@@ -148,10 +273,10 @@
 				{
 					"name": "POST Vincular Veiculos",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/parquimetro/condutores/650d9f7fed584862682e84b4",
+							"raw": "http://localhost:8080/parquimetro/condutores/650d9f7fed584862682e84b4/veiculos?veiculoId=650da265aa434d228ec279cb",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -160,7 +285,14 @@
 							"path": [
 								"parquimetro",
 								"condutores",
-								"650d9f7fed584862682e84b4"
+								"650d9f7fed584862682e84b4",
+								"veiculos"
+							],
+							"query": [
+								{
+									"key": "veiculoId",
+									"value": "650da265aa434d228ec279cb"
+								}
 							]
 						}
 					},
@@ -243,7 +375,7 @@
 				{
 					"name": "DELETE Formas Pagamento",
 					"request": {
-						"method": "GET",
+						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "http://localhost:8080/parquimetro/formas-pagamento",
