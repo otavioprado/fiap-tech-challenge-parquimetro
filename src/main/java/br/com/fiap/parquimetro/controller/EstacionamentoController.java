@@ -10,6 +10,8 @@ import br.com.fiap.parquimetro.model.Veiculo;
 import br.com.fiap.parquimetro.repository.CondutorRepository;
 import br.com.fiap.parquimetro.repository.EstacionamentoRepository;
 import br.com.fiap.parquimetro.repository.VeiculoRepository;
+import br.com.fiap.parquimetro.service.SQSService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,8 @@ public class EstacionamentoController {
     private final CondutorRepository condutorRepository;
     private final VeiculoRepository veiculoRepository;
     private final EstacionamentoMapper estacionamentoMapper;
+    private final SQSService sqsService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping
     public ResponseEntity<Estacionamento> criarEstacionamento(@RequestBody IniciarEstacionamentoDTO iniciarEstacionamentoDTO) {
@@ -70,6 +74,14 @@ public class EstacionamentoController {
         estacionamento.setVeiculo(veiculoOpt.get());
 
         Estacionamento novoEstacionamento = estacionamentoRepository.save(estacionamento);
+
+        try {
+            String estacionamentoJSON = objectMapper.writeValueAsString(estacionamento);
+            sqsService.sendMessage(estacionamentoJSON);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return new ResponseEntity<>(novoEstacionamento, HttpStatus.CREATED);
     }
 
@@ -115,6 +127,14 @@ public class EstacionamentoController {
         estacionamento.setSaida(novaSaida);
 
         calcularValor(estacionamento);
+
+        try {
+            String estacionamentoJSON = objectMapper.writeValueAsString(estacionamento);
+            sqsService.sendMessage(estacionamentoJSON);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Estacionamento save = estacionamentoRepository.save(estacionamento);
 
         return new ResponseEntity<>(save, HttpStatus.OK);
