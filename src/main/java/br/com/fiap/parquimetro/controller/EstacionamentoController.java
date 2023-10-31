@@ -89,7 +89,10 @@ public class EstacionamentoController {
         if (estacionamento.getEntrada() != null && estacionamento.getSaida() != null) {
             long minutosEstacionado = Duration.between(estacionamento.getEntrada(), estacionamento.getSaida()).toMinutes();
             double horasEstacionado = minutosEstacionado / 60.0;
-            estacionamento.setValor(horasEstacionado * 10);
+
+            int horasCheias = (int) Math.ceil(horasEstacionado);
+
+            estacionamento.setValor(horasCheias * 10);
         } else {
             estacionamento.setValor(0);
         }
