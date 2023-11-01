@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -129,7 +128,7 @@ public class EstacionamentoController {
 
         if (estacionamento.getCondutor().getFormaPagamentos()
                 .stream()
-                .map(formaPagamento -> formaPagamento.getId())
+                .map(FormaPagamento::getId)
                 .noneMatch(formaPagamentoId -> formaPagamentoId.equals(atualizarSaidaDTO.getFormaPagamentoId()))) {
             throw new DataIntegrityViolationException("Forma de pagamento não encontrada para o condutor.");
         }        //TODO : revisar
