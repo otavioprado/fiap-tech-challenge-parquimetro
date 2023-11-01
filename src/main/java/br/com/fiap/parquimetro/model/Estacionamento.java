@@ -1,6 +1,7 @@
 package br.com.fiap.parquimetro.model;
 
 import br.com.fiap.parquimetro.enums.TipoPeriodoEstacionamento;
+import jakarta.validation.constraints.Null;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -22,6 +23,10 @@ public class Estacionamento {
     private Condutor condutor;
     @DBRef
     private Veiculo veiculo;
+    @Null
+    @DBRef
+    private FormaPagamento pagamento;
+    @Null
     private double valor;
 }
 
