@@ -33,7 +33,13 @@ public class FormaPagamentoController {
 
         FormaPagamento novaFormaPagamento = formaPagamentoRepository.save(formaPagamentoMapper.toEntity(formaPagamentoDTO));
         Condutor condutor = condutorOpt.get();
-        condutor.setFormaPagamento(novaFormaPagamento);
+
+        if (condutor.getFormaPagamentos() == null) {
+            condutor.setFormaPagamentos(List.of(novaFormaPagamento));
+        } else {
+            condutor.getFormaPagamentos().add(novaFormaPagamento);
+        }
+
         condutorRepository.save(condutor);
 
         return new ResponseEntity<>(formaPagamentoMapper.toDTO(novaFormaPagamento), HttpStatus.CREATED);

@@ -22,5 +22,5 @@ public class Condutor {
     @DBRef
     private List<Veiculo> veiculos;
     @DBRef
-    private List<FormaPagamento> formaPagamento;
+    private List<FormaPagamento> formaPagamentos;
 }

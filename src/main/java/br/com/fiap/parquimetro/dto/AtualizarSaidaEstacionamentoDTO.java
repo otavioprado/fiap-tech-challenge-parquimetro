@@ -9,4 +9,5 @@ import java.time.LocalDateTime;
 @Setter
 public class AtualizarSaidaEstacionamentoDTO {
     private LocalDateTime saida;
+    private String formaPagamentoId;
 }
