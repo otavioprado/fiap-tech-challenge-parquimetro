@@ -2,16 +2,12 @@ package br.com.fiap.parquimetro.controller;
 
 import br.com.fiap.parquimetro.model.Condutor;
 import br.com.fiap.parquimetro.model.Veiculo;
-import br.com.fiap.parquimetro.repository.VeiculoRepository;
 import br.com.fiap.parquimetro.service.CondutorService;
-import br.com.fiap.parquimetro.service.VeiculoService;
 import br.com.fiap.parquimetro.service.VincularService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,17 +41,11 @@ public class CondutorController {
     public ResponseEntity<String> vincularVeiculoAoCondutor(@PathVariable String condutorId,
                                                             @RequestParam String veiculoId) {
         return vincularService.vincularVeiculoAoCondutor(condutorId, veiculoId);
-
     }
 
     @GetMapping("/{condutorId}/veiculos")
     public ResponseEntity<List<Veiculo>> obterVeiculosDoCondutor(@PathVariable String condutorId) {
-        Optional<Condutor> condutor = condutorService.obterCondutorPorId(condutorId);
-        if (condutor.isPresent()) {
-            return new ResponseEntity<>(condutor.get().getVeiculos(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return condutorService.obterVeiculosDoCondutor(condutorId);
     }
 
     @DeleteMapping()

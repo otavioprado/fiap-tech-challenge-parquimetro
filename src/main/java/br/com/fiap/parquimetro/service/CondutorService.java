@@ -1,9 +1,13 @@
 package br.com.fiap.parquimetro.service;
 
 import br.com.fiap.parquimetro.model.Condutor;
+import br.com.fiap.parquimetro.model.Veiculo;
 import br.com.fiap.parquimetro.repository.CondutorRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +15,9 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CondutorService {
+
     private final CondutorRepository condutorRepository;
 
     public Condutor registrarCondutor(Condutor condutor) {
@@ -19,7 +25,6 @@ public class CondutorService {
         if (condutorRepository.existsByEmail(condutor.getEmail())) {
             throw new DataIntegrityViolationException("Já existe um condutor com o mesmo email: " + condutor.getEmail());
         }
-
         return condutorRepository.save(condutor);
     }
 
@@ -29,6 +34,18 @@ public class CondutorService {
 
     public Optional<Condutor> obterCondutorPorId(String condutorId) {
         return condutorRepository.findById(condutorId);
+    }
+
+    public ResponseEntity<List<Veiculo>> obterVeiculosDoCondutor(String condutorId) {
+        log.info("Consultando Veiculos do Condutor{}...", condutorId);
+
+        Optional<Condutor> condutor = obterCondutorPorId(condutorId);
+
+        if (condutor.isPresent()) {
+            return new ResponseEntity<>(condutor.get().getVeiculos(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     public List<Condutor> listarTodosOsCondutores() {
