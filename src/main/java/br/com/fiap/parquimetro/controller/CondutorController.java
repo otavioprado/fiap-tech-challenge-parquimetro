@@ -3,7 +3,6 @@ package br.com.fiap.parquimetro.controller;
 import br.com.fiap.parquimetro.model.Condutor;
 import br.com.fiap.parquimetro.model.Veiculo;
 import br.com.fiap.parquimetro.service.CondutorService;
-import br.com.fiap.parquimetro.service.VincularService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import java.util.Optional;
 public class CondutorController {
 
     private final CondutorService condutorService;
-    private final VincularService vincularService;
 
     @PostMapping()
     public ResponseEntity<Condutor> registrarCondutor(@RequestBody Condutor condutor) {
@@ -40,7 +38,7 @@ public class CondutorController {
     @PostMapping("/{condutorId}/veiculos")
     public ResponseEntity<String> vincularVeiculoAoCondutor(@PathVariable String condutorId,
                                                             @RequestParam String veiculoId) {
-        return vincularService.vincularVeiculoAoCondutor(condutorId, veiculoId);
+        return condutorService.vincularVeiculoAoCondutor(condutorId, veiculoId);
     }
 
     @GetMapping("/{condutorId}/veiculos")
