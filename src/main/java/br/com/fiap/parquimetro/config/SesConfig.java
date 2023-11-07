@@ -9,6 +9,8 @@ import io.awspring.cloud.ses.SimpleEmailServiceMailSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSender;
 
 @Configuration
 public class SesConfig {
@@ -32,12 +34,12 @@ public class SesConfig {
     }
 
     @Bean
-    public SimpleEmailServiceMailSender mailSender(AmazonSimpleEmailService amazonSimpleEmailService) {
+    public MailSender mailSender(AmazonSimpleEmailService amazonSimpleEmailService) {
         return new SimpleEmailServiceMailSender(amazonSimpleEmailService);
     }
 
     @Bean
-    public SimpleEmailServiceJavaMailSender javaMailSender(AmazonSimpleEmailService amazonSimpleEmailService) {
+    public JavaMailSender javaMailSender(AmazonSimpleEmailService amazonSimpleEmailService) {
         return new SimpleEmailServiceJavaMailSender(amazonSimpleEmailService);
     }
 }
