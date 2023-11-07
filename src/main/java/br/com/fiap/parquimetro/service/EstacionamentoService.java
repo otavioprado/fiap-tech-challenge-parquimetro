@@ -13,6 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -79,5 +82,9 @@ public class EstacionamentoService {
         return novoEstacionamento;
     }
 
+    public List<Estacionamento> encontrarEstacionamentosComTempoExpirando() {
+        LocalDateTime tempoMinutosAntes = LocalDateTime.now().minusMinutes(5L);
+        return estacionamentoRepository.findAllBySaidaIsNullAndEntradaLessThanEqual(tempoMinutosAntes);
+    }
 
 }
