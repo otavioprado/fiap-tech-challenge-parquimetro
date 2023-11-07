@@ -6,10 +6,13 @@ import br.com.fiap.parquimetro.enums.TipoPeriodoEstacionamento;
 import br.com.fiap.parquimetro.mapper.EstacionamentoMapper;
 import br.com.fiap.parquimetro.model.Condutor;
 import br.com.fiap.parquimetro.model.Estacionamento;
+import br.com.fiap.parquimetro.model.FormaPagamento;
 import br.com.fiap.parquimetro.model.Veiculo;
 import br.com.fiap.parquimetro.repository.CondutorRepository;
 import br.com.fiap.parquimetro.repository.EstacionamentoRepository;
+import br.com.fiap.parquimetro.repository.FormaPagamentoRepository;
 import br.com.fiap.parquimetro.repository.VeiculoRepository;
+import br.com.fiap.parquimetro.service.EstacionamentoService;
 import br.com.fiap.parquimetro.service.SQSService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -19,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,57 +33,15 @@ public class EstacionamentoController {
     private final EstacionamentoRepository estacionamentoRepository;
     private final CondutorRepository condutorRepository;
     private final VeiculoRepository veiculoRepository;
+    private final EstacionamentoService estacionamentoService;
+    private final FormaPagamentoRepository formaPagamentoRepository;
     private final EstacionamentoMapper estacionamentoMapper;
     private final SQSService sqsService;
     private final ObjectMapper objectMapper;
 
     @PostMapping
     public ResponseEntity<Estacionamento> criarEstacionamento(@RequestBody IniciarEstacionamentoDTO iniciarEstacionamentoDTO) {
-        String condutorId = iniciarEstacionamentoDTO.getCondutorId();
-        Optional<Condutor> condutorOpt = condutorRepository.findById(condutorId);
-        if (condutorOpt.isEmpty()) {
-            throw new DataIntegrityViolationException("Condutor com ID não encontrado: " + condutorId);
-        }
-
-        String veiculoId = iniciarEstacionamentoDTO.getVeiculoId();
-        Optional<Veiculo> veiculoOpt = veiculoRepository.findById(veiculoId);
-        if (veiculoOpt.isEmpty()) {
-            throw new DataIntegrityViolationException("Veículo com ID não encontrado: " + veiculoId);
-        }
-
-        if (condutorOpt.get().getVeiculos().stream().noneMatch(veiculo -> veiculo.getId().equals(veiculoId))) {
-            String mensagemDeErro = "O veículo não está associado ao condutor. Veículo ID: " + veiculoId + ", Condutor ID: " + condutorId;
-            throw new DataIntegrityViolationException(mensagemDeErro);
-        }
-
-        Estacionamento estacionamento = estacionamentoMapper.toEntity(iniciarEstacionamentoDTO);
-        if(iniciarEstacionamentoDTO.getTipo() == TipoPeriodoEstacionamento.PERIODO_FIXO) {
-            // informar saída é obrigatório
-            if(iniciarEstacionamentoDTO.getSaida() == null) {
-                throw new DataIntegrityViolationException("Informar a saída é obrigatório para tempo fixo.");
-            }
-
-            // calcular valor para estacionamento de tempo fixo
-            calcularValor(estacionamento);
-        } else {
-            // valor será calculado quando usuário atualizar via API PUT o horário de saída do estacionamento
-            if(iniciarEstacionamentoDTO.getSaida() != null) {
-                throw new DataIntegrityViolationException("Saída só pode ser informado quando tipo de estacionamento é PERIODO_FIXO");
-            }
-        }
-
-        estacionamento.setCondutor(condutorOpt.get());
-        estacionamento.setVeiculo(veiculoOpt.get());
-
-        Estacionamento novoEstacionamento = estacionamentoRepository.save(estacionamento);
-
-        try {
-            String estacionamentoJSON = objectMapper.writeValueAsString(estacionamento);
-            sqsService.sendMessage(estacionamentoJSON);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        Estacionamento novoEstacionamento = estacionamentoService.criarEstacionamento(iniciarEstacionamentoDTO);
         return new ResponseEntity<>(novoEstacionamento, HttpStatus.CREATED);
     }
 
@@ -89,9 +49,10 @@ public class EstacionamentoController {
         if (estacionamento.getEntrada() != null && estacionamento.getSaida() != null) {
             long minutosEstacionado = Duration.between(estacionamento.getEntrada(), estacionamento.getSaida()).toMinutes();
             double horasEstacionado = minutosEstacionado / 60.0;
-            estacionamento.setValor(horasEstacionado * 10);
-        } else {
-            estacionamento.setValor(0);
+
+            int horasCheias = (int) Math.ceil(horasEstacionado);
+
+            estacionamento.setValor(horasCheias * 10);
         }
     }
 
@@ -119,12 +80,22 @@ public class EstacionamentoController {
         Estacionamento estacionamento = estacionamentoRepository.findById(id)
                 .orElseThrow(() -> new DataIntegrityViolationException("Estacionamento não encontrado com o ID: " + id));
 
-        if(estacionamento.getTipo() != TipoPeriodoEstacionamento.POR_HORA) {
+        if (estacionamento.getTipo() != TipoPeriodoEstacionamento.POR_HORA) {
             throw new DataIntegrityViolationException("Somente estacionamentos do tipo POR_HORA podem ter o horário de saída atualizado.");
         }
 
-        LocalDateTime novaSaida = atualizarSaidaDTO.getSaida();
-        estacionamento.setSaida(novaSaida);
+        if (estacionamento.getCondutor().getFormaPagamentos()
+                .stream()
+                .map(FormaPagamento::getId)
+                .noneMatch(formaPagamentoId -> formaPagamentoId.equals(atualizarSaidaDTO.getFormaPagamentoId()))) {
+            throw new DataIntegrityViolationException("Forma de pagamento não encontrada para o condutor.");
+        }        //TODO : revisar
+
+        estacionamento.setSaida(atualizarSaidaDTO.getSaida());
+        FormaPagamento formaPagamento = formaPagamentoRepository.findById(atualizarSaidaDTO.getFormaPagamentoId())
+                .orElseThrow(() -> new DataIntegrityViolationException("Forma de pagamento não encontrada com o ID: "
+                        + atualizarSaidaDTO.getFormaPagamentoId()));
+        estacionamento.setPagamento(formaPagamento);
 
         calcularValor(estacionamento);
 

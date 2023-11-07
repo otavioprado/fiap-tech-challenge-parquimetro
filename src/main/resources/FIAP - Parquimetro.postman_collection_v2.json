@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "88434994-652b-440d-b90e-d99eaff7d777",
+		"_postman_id": "fd99ce04-a8fc-4a62-a29f-d49c3da49992",
 		"name": "FIAP - Parquimetro",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "5625164"
+		"_exporter_id": "5320581"
 	},
 	"item": [
 		{
@@ -181,7 +181,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"saida\": \"2023-09-22T17:23:45.592\"\n}",
+							"raw": "{\n    \"saida\": \"2023-10-31T22:01\",\n    \"formaPagamentoId\": \"654194bb57bab768055f7a93\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -189,7 +189,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/parquimetro/estacionamentos/650db98b92a24f49b0d4464e",
+							"raw": "http://localhost:8080/parquimetro/estacionamentos/6541953657bab768055f7a95",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -198,7 +198,7 @@
 							"path": [
 								"parquimetro",
 								"estacionamentos",
-								"650db98b92a24f49b0d4464e"
+								"6541953657bab768055f7a95"
 							]
 						}
 					},
