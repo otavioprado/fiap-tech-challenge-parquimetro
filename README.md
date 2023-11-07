@@ -2,9 +2,13 @@
 
 Coleção para ser importada no POSTMAN: 
 ```
-src/main/resources/FIAP - Parquimetro.postman_collection.json
+src/main/resources/FIAP - Parquimetro.postman_collection_v2.json
 ```
 
+OpenAPI Swagger:
+```
+http://localhost:8080/parquimetro/swagger-ui/index.html#/
+```
 Importante: o sistema considera que cada hora estacionado são R$ 10,00
 
 Install and configure Localstack:
