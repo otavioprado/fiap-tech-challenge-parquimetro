@@ -37,7 +37,7 @@ public class FormaPagamentoService {
         } else {
             condutor.getFormaPagamentos().add(novaFormaPagamento);
         }
-
+        condutorRepository.save(condutor);
         return formaPagamentoMapper.toDTO(novaFormaPagamento);
     }
 

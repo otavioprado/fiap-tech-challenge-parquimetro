@@ -30,7 +30,8 @@ public class AlertaTempoEstacionamentoScheduler {
 
     @Scheduled(cron = CADA_5MINUTOS, zone = TIME_ZONE)
     public void verificarExpiracaoTempo() {
-        List<Estacionamento> estacionamentosComTempoExpirando = estacionamentoService.encontrarEstacionamentosComTempoExpirando();
+        List<Estacionamento> estacionamentosComTempoExpirando =
+                estacionamentoService.encontrarEstacionamentosComTempoExpirando();
 
         SendEmailRequest.Builder builder = SendEmailRequest.builder();
 
